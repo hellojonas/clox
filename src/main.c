@@ -1,19 +1,28 @@
 #include "chunk.h"
 #include "common.h"
-#include "value.h"
-#include "debug.h"
+#include "vm.h"
 
-int main(int argc, const char* argv[]) {
+int main(int argc, const char *argv[]) {
+    initVM();
+
     Chunk chunk;
     initChunk(&chunk);
 
+    int constant = addConstant(&chunk, 20.7);
     writeChunk(&chunk, OP_CONSTANT, 1);
-
-    uint8_t constant = chunk.counstants.count;
-    writeValueArray(&chunk.counstants, 20.7);
     writeChunk(&chunk, constant, 1);
 
-    writeChunk(&chunk, OP_RETURN, 1);
 
-    disassembleChunk(&chunk, "Test Chunk");
+    constant = addConstant(&chunk, 10);
+    writeChunk(&chunk, OP_CONSTANT, 1);
+    writeChunk(&chunk, constant, 1);
+
+    writeChunk(&chunk, OP_SUBTRACT, 1);
+
+    writeChunk(&chunk, OP_RETURN, 2);
+
+    interpret(&chunk);
+
+    freeVM();
+    freeChunk(&chunk);
 }
